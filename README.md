@@ -1,4 +1,4 @@
-                                                            🐦 Twitter Sentiment Analysis
+                                              🐦 Twitter Sentiment Analysis
 
 A complete Machine Learning + NLP + Flask Web App project that performs Sentiment Analysis on Twitter text data and classifies tweets into Positive, Negative, or Neutral sentiments.
 
