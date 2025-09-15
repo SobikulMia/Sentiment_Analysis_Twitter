@@ -1,0 +1,14 @@
+Flask
+gunicorn
+pickle5
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+nltk
+wordcloud
+plotly
+imblearn
+
+# pip install -r requirements.txt

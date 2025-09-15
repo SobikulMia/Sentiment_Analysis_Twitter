@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Twitter Sentiment Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    header {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      padding: 25px 40px;
+      margin-bottom: 40px;
+      user-select: none;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      text-transform: uppercase;
+      text-align: center;
+      max-width: 900px;
+      width: 100%;
+    }
+    main {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 35px 40px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    label {
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      user-select: none;
+    }
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border-radius: 15px;
+      border: none;
+      padding: 20px;
+      font-size: 1.1rem;
+      font-family: 'Poppins', sans-serif;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.15);
+      color: #333;
+      background: #fff;
+      transition: box-shadow 0.3s ease;
+    }
+    textarea:focus {
+      outline: none;
+      box-shadow: inset 0 0 12px #764ba2;
+    }
+    button {
+      align-self: flex-start;
+      margin-top: 10px;
+      padding: 14px 35px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #764ba2, #667eea);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(102,126,234,0.6);
+      letter-spacing: 1.2px;
+      user-select: none;
+      transition: background 0.35s ease, transform 0.2s ease;
+      text-transform: uppercase;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #5e3e95, #4a3190);
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(74,49,144,0.9);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    .results {
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 30px 25px;
+      min-height: 180px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+      overflow-y: auto;
+      max-height: 320px;
+    }
+    .result-item {
+      padding: 15px 12px;
+      margin-bottom: 12px;
+      border-radius: 15px;
+      font-size: 1.1rem;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.12);
+      user-select: text;
+      line-height: 1.4;
+      transition: background-color 0.3s ease;
+    }
+    .result-item.sentiment-positive {
+      background-color: rgba(0, 255, 136, 0.2);
+      color: #00cc6a;
+      font-weight: 700;
+      border-left: 5px solid #00ff88;
+    }
+    .result-item.sentiment-neutral {
+      background-color: rgba(255, 217, 102, 0.2);
+      color: #ccaa33;
+      font-weight: 700;
+      border-left: 5px solid #ffd966;
+    }
+    .result-item.sentiment-negative {
+      background-color: rgba(255, 85, 85, 0.2);
+      color: #cc4444;
+      font-weight: 700;
+      border-left: 5px solid #ff5555;
+    }
+    /* Scrollbar style for results */
+    .results::-webkit-scrollbar {
+      width: 8px;
+    }
+    .results::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .results::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+    /* Responsive */
+    @media (max-width: 640px) {
+      header {
+        font-size: 2rem;
+        padding: 18px 25px;
+      }
+      main {
+        padding: 25px 20px;
+      }
+      textarea {
+        min-height: 120px;
+        font-size: 1rem;
+      }
+      button {
+        padding: 12px 30px;
+        font-size: 1rem;
+      }
+      .results {
+        max-height: 250px;
+        padding: 20px 15px;
+      }
+      .result-item {
+        font-size: 1rem;
+        padding: 12px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Twitter Sentiment Analysis</header>
+  <main>
+    <label for="tweetInput">Enter Tweets (one per line):</label>
+    <textarea id="tweetInput" placeholder="Type or paste tweets here..."></textarea>
+    <button onclick="analyzeTweets()">Analyze Sentiment</button>
+
+    <div class="results" id="results">
+      Results will show here
+     </div>
+  </main>
+      <script>
+    async function analyzeTweets() {
+      const input = document.getElementById('tweetInput').value.trim();
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (!input) {
+        resultsDiv.innerHTML = '<p style="color:#ffd966; font-weight:600;">Please enter at least one tweet.</p>';
+        return;
+      }
+
+      const tweets = input.split('\n').filter(t => t.trim().length > 0);
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ texts: tweets })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        data.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'result-item sentiment-' + item.sentiment.toLowerCase();
+          div.textContent = `Tweet ${idx + 1}: ${item.text} → ${item.sentiment}`;
+          resultsDiv.appendChild(div);
+        });
+      } catch (error) {
+        resultsDiv.innerHTML = '<p style="color:#ff5555;">Error contacting server.</p>';
+      }
+    }
+  </script>
+
+</body>
+</html>
+
